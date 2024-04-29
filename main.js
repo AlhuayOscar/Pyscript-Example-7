@@ -10,8 +10,6 @@ const fruits = [
 ];
 
 const fn = (d) => d.count;
-const data = d3.pie().value(fn)(fruits);
-
 const arc = d3
   .arc()
   .innerRadius(210)
@@ -29,25 +27,45 @@ const svg = js
   .attr("width", "400")
   .attr("height", "400");
 
-for (const d of data) {
-  svg.append("path").style("fill", "steelblue").attr("d", arc(d));
+function updateData() {
+  // Actualizar los datos de frutas
+  fruits.forEach((fruit) => {
+    fruit.count = Math.floor(Math.random() * 20) + 1; // Simulación de datos cambiantes
+  });
 
-  const text = svg
-    .append("text")
-    .style("fill", "white")
-    .attr("transform", `translate(${arc.centroid(d).join(",")})`)
-    .attr("text-anchor", "middle");
+  const data = d3.pie().value(fn)(fruits);
 
-  text
-    .append("tspan")
-    .style("font-size", "24")
-    .attr("x", "0")
-    .text(d.data.name);
+  // Limpiar el SVG
+  svg.selectAll("*").remove();
 
-  text
-    .append("tspan")
-    .style("font-size", "18")
-    .attr("x", "0")
-    .attr("dy", "1.3em")
-    .text(d.value);
+  // Volver a dibujar el gráfico
+  for (const d of data) {
+    svg.append("path").style("fill", "steelblue").attr("d", arc(d));
+
+    const text = svg
+      .append("text")
+      .style("fill", "white")
+      .attr("transform", `translate(${arc.centroid(d).join(",")})`)
+      .attr("text-anchor", "middle");
+
+    text
+      .append("tspan")
+      .style("font-size", "24")
+      .attr("x", "0")
+      .text(d.data.name);
+
+    text
+      .append("tspan")
+      .style("font-size", "18")
+      .attr("x", "0")
+      .attr("dy", "1.3em")
+      .text(d.value);
+  }
+  
 }
+
+// Llamar a la función `updateData` cada 2 segundos
+setInterval(updateData, 2000);
+
+// Llamar a `updateData` por primera vez para dibujar el gráfico inicial
+updateData();
