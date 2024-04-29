@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
   <!-- PyScript CSS -->
-  <script src="./assets/css/core.css"></script>
+  <link rel="stylesheet" href="./assets/css/core.css"></script>
   <!-- CSS for examples -->
-  <link rel="stylesheet" href="./assets/css/examples.css" />
+  <link rel="stylesheet" href="./assets/css/style.css" />
 
   <!-- This script tag bootstraps PyScript -->
   <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
@@ -24,7 +24,7 @@
   </style>
   <script type="module">
     const loading = document.getElementById("loading");
-    addEventListener("py:ready", () => loading.close());
+    addEventListener("py:ready", () => loading?.close());
   </script>
 
   <title>D3 Differences</title>
