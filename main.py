@@ -7,8 +7,9 @@
 #     english = input_text.value
 #     output_div = document.querySelector("#output")
 #     output_div.innerText = arrr.translate(english)
-from js import d3
-from pyodide.ffi import create_proxy, to_js
+
+from js import d3  # type: ignore
+from pyodide.ffi import create_proxy, to_js  # type: ignore
 
 fruits = [
     {"name": "🍊", "count": 21},
