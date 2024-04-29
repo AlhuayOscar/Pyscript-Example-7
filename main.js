@@ -3,10 +3,10 @@ const fruits = [
   { name: "🍇", count: 13 },
   { name: "🍏", count: 8 },
   { name: "🍌", count: 5 },
-  { name: "🍐", count: 3 },
+  { name: "🍐", count: 4 },
   { name: "🍋", count: 2 },
-  { name: "🍎", count: 1 },
-  { name: "🍉", count: 1 },
+  { name: "🍎", count: 2 },
+  { name: "🍉", count: 2 },
 ];
 
 const fn = (d) => d.count;
@@ -35,33 +35,69 @@ function updateData() {
 
   const data = d3.pie().value(fn)(fruits);
 
-  // Limpiar el SVG
-  svg.selectAll("*").remove();
+  // Seleccionar todos los elementos `path`
+  const paths = svg.selectAll("path").data(data);
 
-  // Volver a dibujar el gráfico
-  for (const d of data) {
-    svg.append("path").style("fill", "steelblue").attr("d", arc(d));
+  // Eliminar los elementos `path` que no se necesitan
+  paths.exit().remove();
 
-    const text = svg
-      .append("text")
-      .style("fill", "white")
-      .attr("transform", `translate(${arc.centroid(d).join(",")})`)
-      .attr("text-anchor", "middle");
+  // Aplicar transiciones a los elementos existentes
+  paths
+    .transition()
+    .duration(1000) // Duración de la transición
+    .attr("d", arc);
 
-    text
-      .append("tspan")
-      .style("font-size", "24")
-      .attr("x", "0")
-      .text(d.data.name);
+  // Añadir nuevos elementos `path`
+  paths
+    .enter()
+    .append("path")
+    .style("fill", "steelblue")
+    .attr("d", arc)
+    .transition()
+    .duration(1000) // Duración de la transición
+    .attrTween("d", function (d) {
+      const interpolate = d3.interpolate(this._current, d);
+      this._current = interpolate(0);
+      return function (t) {
+        return arc(interpolate(t));
+      };
+    });
 
-    text
-      .append("tspan")
-      .style("font-size", "18")
-      .attr("x", "0")
-      .attr("dy", "1.3em")
-      .text(d.value);
-  }
-  
+  // Seleccionar todos los elementos de texto
+  const text = svg.selectAll("text").data(data);
+
+  // Eliminar los elementos de texto que no se necesitan
+  text.exit().remove();
+
+  // Añadir nuevos elementos de texto
+  const newText = text
+    .enter()
+    .append("text")
+    .style("fill", "white")
+    .attr("text-anchor", "middle")
+    .attr("transform", function (d) {
+      const centroid = arc.centroid(d);
+      return `translate(${centroid})`;
+    });
+
+  // Añadir primer línea de texto (nombre de la fruta)
+  newText
+    .append("tspan")
+    .style("font-size", "24")
+    .attr("x", "0")
+    .text(function (d) {
+      return d.data.name;
+    });
+
+  // Añadir segunda línea de texto (cantidad)
+  newText
+    .append("tspan")
+    .style("font-size", "18")
+    .attr("x", "0")
+    .attr("dy", "1.3em")
+    .text(function (d) {
+      return d.value;
+    });
 }
 
 // Llamar a la función `updateData` cada 2 segundos
